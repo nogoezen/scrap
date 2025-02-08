@@ -2,8 +2,6 @@ import { NextResponse } from 'next/server';
 import axios from 'axios';
 import * as cheerio from 'cheerio';
 import type { AnyNode } from 'cheerio';
-import * as fs from 'fs/promises';
-import path from 'path';
 
 interface MediaItem {
   type: 'image' | 'video' | 'audio';
@@ -68,13 +66,15 @@ export async function POST(req: Request) {
       );
     }
 
-    // Fetch the webpage content with a custom user agent
+    // Add timeout to prevent long-running functions
     const response = await axios.get(url, {
       headers: {
         'User-Agent': 'Mozilla/5.0 (compatible; WebScraper/1.0; +http://example.com)',
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
         'Accept-Language': 'en-US,en;q=0.5',
       },
+      timeout: 15000, // 15 second timeout
+      maxContentLength: 10 * 1024 * 1024, // 10MB max
     });
     const html = response.data;
 
@@ -243,48 +243,62 @@ export async function POST(req: Request) {
     const wordCount = textContent.trim().split(/\s+/).length;
     const paragraphCount = $('p').length;
 
-    // Prepare the scraped data
-    const scrapedData = {
-      url,
-      title,
-      description,
-      favicon: favicon ? new URL(favicon, url).toString() : null,
-      links,
-      headings,
-      mainContent: mainContent || 'No main content found',
-      media: media.slice(0, 20),
-      socialMetadata,
-      seoMetadata,
-      technologies,
-      statistics: {
-        wordCount,
-        paragraphCount,
-        mediaCount: media.length,
-        linkCount: links.length,
-        headingCount: headings.length,
+    // Return the scraped data with proper headers
+    return NextResponse.json(
+      {
+        url,
+        title,
+        description,
+        favicon,
+        links,
+        headings,
+        mainContent,
+        media,
+        socialMetadata,
+        seoMetadata,
+        technologies,
+        statistics: {
+          wordCount,
+          paragraphCount,
+          mediaCount: media.length,
+          linkCount: links.length,
+          headingCount: headings.length,
+        },
+        timestamp: new Date().toISOString(),
       },
-      timestamp: new Date().toISOString(),
-    };
-
-    // Save the data to a JSON file
-    try {
-      const dataDir = path.join(process.cwd(), 'data');
-      await fs.mkdir(dataDir, { recursive: true });
-      
-      const fileName = `scrape-${new URL(url).hostname}-${new Date().toISOString().slice(0,10)}.json`;
-      const filePath = path.join(dataDir, fileName);
-      
-      await fs.writeFile(filePath, JSON.stringify(scrapedData, null, 2));
-    } catch (error) {
-      console.error('Error saving data:', error);
-      // Continue even if saving fails
-    }
-
-    return NextResponse.json(scrapedData);
+      {
+        status: 200,
+        headers: {
+          'Cache-Control': 'no-store',
+          'Content-Type': 'application/json',
+        },
+      }
+    );
   } catch (error) {
     console.error('Scraping error:', error);
+    
+    // Handle different types of errors
+    if (axios.isAxiosError(error)) {
+      if (error.code === 'ECONNABORTED') {
+        return NextResponse.json(
+          { error: 'Request timed out' },
+          { status: 408 }
+        );
+      }
+      if (error.response?.status === 404) {
+        return NextResponse.json(
+          { error: 'Page not found' },
+          { status: 404 }
+        );
+      }
+      return NextResponse.json(
+        { error: error.message },
+        { status: error.response?.status || 500 }
+      );
+    }
+
     return NextResponse.json(
-      { error: 'Failed to scrape the website' },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }
