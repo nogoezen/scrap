@@ -1,49 +1,32 @@
-# 🌐 Web Scraper Pro
+# Web Scraper Pro
 
-A modern, feature-rich web scraping application built with Next.js, offering comprehensive data extraction and analysis capabilities.
+A modern, feature-rich web scraping application built with Next.js, TypeScript, and Tailwind CSS. This application allows you to analyze websites and extract valuable information with a beautiful, user-friendly interface.
 
-![Next.js](https://img.shields.io/badge/Next.js-13-black)
-![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind-3-38B2AC)
-![License](https://img.shields.io/badge/License-MIT-green)
+## Features
 
-## ✨ Features
+- 🚀 **Modern Tech Stack**: Built with Next.js 14, TypeScript, and Tailwind CSS
+- 🎨 **Beautiful UI**: Clean and modern interface with dark mode support
+- 📱 **Responsive Design**: Works seamlessly on desktop and mobile devices
+- ⚡ **Real-time Scraping**: Fast and efficient web scraping with error handling
+- 🔄 **Multiple Export Formats**: Export data in JSON and Excel formats
 
-### 🔍 Data Extraction
-- Page metadata and content
-- Social media tags (OpenGraph, Twitter)
-- SEO information
-- Media files (images, videos, audio)
-- Links and page structure
-- Technology stack detection
+### Scraping Capabilities
 
-### 💫 Modern UI/UX
-- Responsive design
-- Dark/Light mode
-- Smooth animations
-- Interactive components
-- Real-time feedback
-- Progress indicators
+- 📝 Basic Information (title, description, main content)
+- 🖼️ Media Content (images, videos, audio)
+- 🔗 Links Analysis
+- 📊 Page Structure (headings hierarchy)
+- 🎯 SEO Metadata
+- 📱 Social Media Tags
+- 💻 Technology Stack Detection
+- 📈 Page Statistics
 
-### 💾 Data Management
-- Automatic server-side saving
-- Client-side JSON export
-- Organized file structure
-- Timestamp-based naming
-- Data persistence
-
-### 🛠️ Technical Features
-- Framework detection
-- Analytics tracking
-- Resource analysis
-- Performance metrics
-- Content statistics
-
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
-- Node.js 18+ 
-- npm/yarn/pnpm
+
+- Node.js 18.x or higher
+- npm or yarn
 
 ### Installation
 
@@ -55,128 +38,103 @@ cd scrap
 
 2. Install dependencies:
 ```bash
-npm install --legacy-peer-deps
+npm install
 # or
 yarn install
-# or
-pnpm install
 ```
 
-3. Start the development server:
+3. Run the development server:
 ```bash
 npm run dev
 # or
 yarn dev
-# or
-pnpm dev
 ```
 
-4. Open [http://localhost:3000](http://localhost:3000) in your browser.
+4. Open [http://localhost:3000](http://localhost:3000) in your browser
 
-## 🎯 Usage
+## Usage
 
 1. Enter a URL in the input field
-2. Click "Scrape" to start the extraction process
-3. View the extracted data in different categories:
-   - Basic Information
+2. Click "Scrape" to analyze the website
+3. View the results in different categories:
+   - Basic Info
    - Media Content
-   - Social Media Data
+   - Social Media Tags
    - SEO Information
    - Technologies Used
    - Page Statistics
+4. Export the data in your preferred format (JSON or Excel)
 
-4. Download the data:
-   - Click "Save Data" to download as JSON
-   - Find saved files in the `/data/` directory
+## Data Export Options
 
-## 📊 Data Categories
+### JSON Export
+- Complete raw data
+- Perfect for further processing
+- Maintains all original data structure
+
+### Excel Export
+Organized into multiple sheets:
+- Basic Info
+- Media Content
+- Links
+- Social Media
+- SEO
+- Technologies
+- Statistics
+
+## Features in Detail
 
 ### Basic Information
-- Page title
-- Meta description
-- Main content
+- Page Title
+- Meta Description
+- Main Content
 - Favicon
+- Page Structure
 
-### Media Content
+### Media Analysis
 - Images with metadata
-- Videos (including embeds)
+- Videos (including YouTube embeds)
 - Audio files
 - Dimensions and attributes
 
-### Social Media
-- OpenGraph tags
-- Twitter card data
-- Social media images
-- Share metadata
-
-### SEO Information
+### SEO Analysis
 - Meta tags
 - Robots directives
 - Keywords
 - Canonical URLs
 - Language settings
 
-### Technology Stack
-- Frameworks used
-- Analytics tools
-- Script analysis
-- Stylesheet information
+### Technology Detection
+- Frontend Frameworks
+- Analytics Tools
+- Script Analysis
+- Stylesheet Analysis
 
 ### Statistics
-- Word count
-- Paragraph count
-- Media count
-- Link count
-- Heading structure
+- Word Count
+- Paragraph Count
+- Media Count
+- Link Count
+- Heading Count
 
-## 🔧 Configuration
+## Contributing
 
-### Environment Variables
-Create a `.env.local` file:
-```env
-# Add any required API keys or configuration
-```
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-### Customization
-- Modify `tailwind.config.ts` for styling
-- Adjust scraping rules in `app/api/scrape/route.ts`
-- Customize UI components in `app/page.tsx`
-
-## 📁 Project Structure
-
-```
-scrap/
-├── app/
-│   ├── api/
-│   │   └── scrape/
-│   │       └── route.ts    # Scraping logic
-│   └── page.tsx            # Main UI component
-├── data/                   # Saved scraping results
-├── public/                 # Static assets
-├── styles/                 # Global styles
-├── package.json           
-└── README.md
-```
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to the branch
-5. Open a Pull Request
-
-## 📝 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgments
+## Tech Stack
 
 - [Next.js](https://nextjs.org/)
-- [Cheerio](https://cheerio.js.org/)
+- [TypeScript](https://www.typescriptlang.org/)
 - [Tailwind CSS](https://tailwindcss.com/)
 - [Framer Motion](https://www.framer.com/motion/)
+- [Cheerio](https://cheerio.js.org/)
+- [XLSX](https://www.npmjs.com/package/xlsx)
 - [React Icons](https://react-icons.github.io/react-icons/)
+- [Geist Font](https://vercel.com/font)
 
 ## 📧 Contact
 
