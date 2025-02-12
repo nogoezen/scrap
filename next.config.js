@@ -20,6 +20,23 @@ const nextConfig = {
   output: 'standalone',
   poweredByHeader: false,
   reactStrictMode: true,
+  swcMinify: true,
+  experimental: {
+    optimizeCss: true,
+  },
+  images: {
+    domains: ['*'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**',
+      },
+      {
+        protocol: 'http',
+        hostname: '**',
+      },
+    ],
+  },
 };
 
 module.exports = nextConfig; 

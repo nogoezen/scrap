@@ -79,6 +79,7 @@ interface ScrapedData {
 }
 
 export default function Home() {
+  const [mounted, setMounted] = useState(false);
   const [url, setUrl] = useState('');
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<ScrapedData | null>(null);
@@ -87,14 +88,22 @@ export default function Home() {
   const [darkMode, setDarkMode] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     // Check system preference for dark mode
     if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
       setDarkMode(true);
     }
   }, []);
 
+  // Prevent hydration issues
+  if (!mounted) {
+    return null;
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!url) return;
+    
     setLoading(true);
     setError('');
     setData(null);
@@ -109,7 +118,8 @@ export default function Home() {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to scrape the URL');
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to scrape the URL');
       }
 
       const result = await response.json();
@@ -249,52 +259,35 @@ export default function Home() {
             </div>
           </div>
           
-          <motion.form 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            onSubmit={handleSubmit} 
-            className="mb-8"
-          >
+          <form onSubmit={handleSubmit} className="mb-8">
             <div className="flex gap-4">
-              <div className="flex-1 relative">
-                <input
-                  type="url"
-                  value={url}
-                  onChange={(e) => setUrl(e.target.value)}
-                  placeholder="Enter URL to scrape"
-                  required
-                  className="w-full p-4 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 shadow-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent outline-none transition-all duration-200 dark:text-white"
-                />
-                {loading && (
-                  <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
-                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-500"></div>
-                  </div>
-                )}
-              </div>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+              <input
+                type="url"
+                value={url}
+                onChange={(e) => setUrl(e.target.value)}
+                placeholder="Enter URL to scrape..."
+                required
+                className="flex-1 px-4 py-2 rounded-xl border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <button
                 type="submit"
                 disabled={loading}
-                className="px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl font-medium shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-6 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl font-medium shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50"
               >
                 {loading ? 'Scraping...' : 'Scrape'}
-              </motion.button>
+              </button>
             </div>
-          </motion.form>
+          </form>
 
-          <AnimatePresence>
-            {error && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                className="p-4 mb-4 bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-200 rounded-xl shadow-lg"
-              >
-                {error}
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="p-4 mb-8 bg-red-100 text-red-700 rounded-lg"
+            >
+              {error}
+            </motion.div>
+          )}
 
           <AnimatePresence>
             {data && (
