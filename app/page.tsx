@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiSun, FiMoon, FiSearch, FiGlobe, FiImage, FiShare2, FiCode, FiBarChart2, FiDownload } from 'react-icons/fi';
+import { FiSun, FiMoon, FiSearch, FiGlobe, FiImage, FiShare2, FiCode, FiBarChart2, FiDownload, FiFileText, FiTable } from 'react-icons/fi';
+import * as XLSX from 'xlsx';
 
 interface MediaItem {
   type: 'image' | 'video' | 'audio';
@@ -148,6 +149,86 @@ export default function Home() {
     URL.revokeObjectURL(href);
   };
 
+  const handleJSONExport = () => {
+    if (!data) return;
+
+    const fileName = `scrape-${new URL(data.url).hostname}-${new Date().toISOString().slice(0,10)}.json`;
+    const jsonString = JSON.stringify(data, null, 2);
+    const blob = new Blob([jsonString], { type: 'application/json' });
+    const href = URL.createObjectURL(blob);
+    
+    const link = document.createElement('a');
+    link.href = href;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(href);
+  };
+
+  const handleExcelExport = () => {
+    if (!data) return;
+
+    // Prepare data for Excel
+    const workbook = XLSX.utils.book_new();
+
+    // Basic Info Sheet
+    const basicInfo = {
+      'URL': data.url,
+      'Title': data.title || '',
+      'Description': data.description || '',
+      'Main Content': data.mainContent || '',
+    };
+    const basicWS = XLSX.utils.json_to_sheet([basicInfo]);
+    XLSX.utils.book_append_sheet(workbook, basicWS, 'Basic Info');
+
+    // Media Sheet
+    if (data.media && data.media.length > 0) {
+      const mediaWS = XLSX.utils.json_to_sheet(data.media);
+      XLSX.utils.book_append_sheet(workbook, mediaWS, 'Media');
+    }
+
+    // Links Sheet
+    if (data.links && data.links.length > 0) {
+      const linksWS = XLSX.utils.json_to_sheet(data.links);
+      XLSX.utils.book_append_sheet(workbook, linksWS, 'Links');
+    }
+
+    // Social Media Sheet
+    if (data.socialMetadata) {
+      const socialWS = XLSX.utils.json_to_sheet([data.socialMetadata]);
+      XLSX.utils.book_append_sheet(workbook, socialWS, 'Social Media');
+    }
+
+    // SEO Sheet
+    if (data.seoMetadata) {
+      const seoWS = XLSX.utils.json_to_sheet([data.seoMetadata]);
+      XLSX.utils.book_append_sheet(workbook, seoWS, 'SEO');
+    }
+
+    // Technologies Sheet
+    if (data.technologies) {
+      const techData = {
+        'Frameworks': data.technologies.frameworks.join(', '),
+        'Analytics': data.technologies.analytics.join(', '),
+        'Scripts Count': data.technologies.scripts.length,
+        'Styles Count': data.technologies.styles.length,
+      };
+      const techWS = XLSX.utils.json_to_sheet([techData]);
+      XLSX.utils.book_append_sheet(workbook, techWS, 'Technologies');
+    }
+
+    // Statistics Sheet
+    if (data.statistics) {
+      const statsWS = XLSX.utils.json_to_sheet([data.statistics]);
+      XLSX.utils.book_append_sheet(workbook, statsWS, 'Statistics');
+    }
+
+    // Generate Excel file
+    const fileName = `scrape-${new URL(data.url).hostname}-${new Date().toISOString().slice(0,10)}.xlsx`;
+    XLSX.writeFile(workbook, fileName);
+  };
+
   const renderMediaItem = (item: MediaItem, index: number) => {
     switch (item.type) {
       case 'image':
@@ -238,17 +319,30 @@ export default function Home() {
             </div>
             <div className="flex items-center gap-2">
               {data && (
-                <motion.button
-                  initial={{ opacity: 0, scale: 0.5 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={handleDownload}
-                  className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl font-medium shadow-lg hover:shadow-xl transition-all duration-200"
-                >
-                  <FiDownload className="w-5 h-5" />
-                  Save Data
-                </motion.button>
+                <div className="flex gap-2">
+                  <motion.button
+                    initial={{ opacity: 0, scale: 0.5 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={handleJSONExport}
+                    className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl font-medium shadow-lg hover:shadow-xl transition-all duration-200"
+                  >
+                    <FiFileText className="w-5 h-5" />
+                    JSON
+                  </motion.button>
+                  <motion.button
+                    initial={{ opacity: 0, scale: 0.5 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={handleExcelExport}
+                    className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl font-medium shadow-lg hover:shadow-xl transition-all duration-200"
+                  >
+                    <FiTable className="w-5 h-5" />
+                    Excel
+                  </motion.button>
+                </div>
               )}
               <button
                 onClick={() => setDarkMode(!darkMode)}
