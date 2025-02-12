@@ -21,9 +21,7 @@ const nextConfig = {
   poweredByHeader: false,
   reactStrictMode: true,
   swcMinify: true,
-  experimental: {
-    optimizeCss: true,
-  },
+  optimizeFonts: true,
   images: {
     domains: ['*'],
     remotePatterns: [
@@ -37,6 +35,11 @@ const nextConfig = {
       },
     ],
   },
+  experimental: {
+    optimizeCss: false,
+  },
+  pageExtensions: ['js', 'jsx', 'ts', 'tsx'],
+  trailingSlash: true,
 };
 
 module.exports = nextConfig; 
