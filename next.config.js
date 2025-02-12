@@ -38,8 +38,6 @@ const nextConfig = {
   experimental: {
     optimizeCss: false,
   },
-  pageExtensions: ['js', 'jsx', 'ts', 'tsx'],
-  trailingSlash: true,
 };
 
 module.exports = nextConfig; 
