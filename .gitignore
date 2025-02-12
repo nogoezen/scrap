@@ -44,3 +44,5 @@ next-env.d.ts
 /data
 data/
 *.json
+!package.json
+!package-lock.json
