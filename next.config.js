@@ -17,6 +17,9 @@ const nextConfig = {
     config.externals = [...config.externals, 'canvas', 'jsdom'];
     return config;
   },
+  output: 'standalone',
+  poweredByHeader: false,
+  reactStrictMode: true,
 };
 
 module.exports = nextConfig; 
