@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import axios from 'axios';
 import * as cheerio from 'cheerio';
-import type { AnyNode } from 'cheerio';
+import type { Element } from 'cheerio';
 
 interface MediaItem {
   type: 'image' | 'video' | 'audio';
@@ -87,7 +87,7 @@ export async function POST(req: Request) {
     const favicon = $('link[rel="icon"], link[rel="shortcut icon"]').attr('href');
     
     // Extract all links with more details
-    const links = Array.from(new Set($('a').map((_: number, element: AnyNode) => {
+    const links = Array.from(new Set($('a').map((_: number, element: Element) => {
       const href = $(element).attr('href');
       const text = $(element).text().trim();
       return href && href.startsWith('http') ? {
@@ -99,7 +99,7 @@ export async function POST(req: Request) {
 
     // Get all headings with hierarchy
     const headings = $('h1, h2, h3, h4, h5, h6')
-      .map((_: number, el: AnyNode) => ({
+      .map((_: number, el: Element) => ({
         level: parseInt(el.tagName.toLowerCase().replace('h', '')),
         text: $(el).text().trim(),
       }))
@@ -116,7 +116,7 @@ export async function POST(req: Request) {
     const media: MediaItem[] = [];
 
     // Extract images with more metadata
-    $('img').each((_: number, element: AnyNode) => {
+    $('img').each((_: number, element: Element) => {
       const src = $(element).attr('src');
       if (src) {
         const mediaItem: MediaItem = {
@@ -134,7 +134,7 @@ export async function POST(req: Request) {
     });
 
     // Enhanced video extraction
-    $('video, iframe[src*="youtube"], iframe[src*="vimeo"], iframe[src*="dailymotion"]').each((_: number, element: AnyNode) => {
+    $('video, iframe[src*="youtube"], iframe[src*="vimeo"], iframe[src*="dailymotion"]').each((_: number, element: Element) => {
       const src = $(element).attr('src') || $(element).find('source').attr('src');
       if (src) {
         const mediaItem: MediaItem = {
@@ -151,7 +151,7 @@ export async function POST(req: Request) {
     });
 
     // Audio extraction
-    $('audio').each((_: number, element: AnyNode) => {
+    $('audio').each((_: number, element: Element) => {
       const src = $(element).attr('src') || $(element).find('source').attr('src');
       if (src) {
         const mediaItem: MediaItem = {
@@ -194,7 +194,7 @@ export async function POST(req: Request) {
     };
 
     // Analyze scripts
-    $('script').each((_: number, element: AnyNode) => {
+    $('script').each((_: number, element: Element) => {
       const src = $(element).attr('src');
       const type = $(element).attr('type') || 'text/javascript';
       const scriptInfo: ScriptInfo = {
@@ -224,7 +224,7 @@ export async function POST(req: Request) {
     });
 
     // Analyze styles
-    $('link[rel="stylesheet"]').each((_: number, element: AnyNode) => {
+    $('link[rel="stylesheet"]').each((_: number, element: Element) => {
       const href = $(element).attr('href');
       const media = $(element).attr('media');
       technologies.styles.push({
